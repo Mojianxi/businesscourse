@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjcw.course.dao.IClassInfoDao">
+    <resultMap type="ClassidInfo" id="classInfoMap">
+        <id property="classId" column="class_id" />
+        <result property="trainContent" column="train_content" />
+        <result property="trainDate" column="train_date" />
+        <result property="trainNumber" column="train_number" />
+        <result property="trainAddress" column="train_address" />
+        <result property="trainMakeCash" column="train_make_cash" />
+    </resultMap>
+	<!-- 查询客户信息 -->
+	<select id="list" parameterType="ClassidInfo" resultMap="classInfoMap">
+		select a.*,sum(b.course_price) as train_make_cash,COUNT(c.customer_id) as train_number,GROUP_CONCAT(b.course_name) as train_content
+		 FROM classid_info as a,course_info as b,customer_info as c,
+		class_course_info as d WHERE a.class_id=d.class_id and d.course_id=b.course_id
+		and d.customer_id=c.customer_id GROUP BY d.class_id
+		<if test="start!=-1">
+			limit #{start},#{length}
+		</if>
+	</select>
+	<!-- 查询总记录数 -->
+	<select id="getcount" parameterType="ClassidInfo" resultType="Long">
+		select count(1) from classid_info
+	</select>
+
+	<!-- 根据已有客户查询客户信息 -->
+	<select id="getClassidInfo" parameterType="ClassidInfo" resultMap="classInfoMap">
+		select * from classid_info
+		<if test="classId!=null and classId!=''">
+			where class_id=#{classId}
+		</if>
+
+	</select>
+
+</mapper>

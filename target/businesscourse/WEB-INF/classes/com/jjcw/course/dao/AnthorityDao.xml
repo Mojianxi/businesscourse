@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjcw.course.dao.IAnthorityDao">
+
+    <resultMap type="RoleMenuInfo" id="roleMenuMap">
+        <id property="roleMenuId" column="role_menu_id" />
+        <result property="menuId" column="menu_id" />
+        <result property="roleId" column="role_id" />
+    </resultMap>
+
+    <!-- 根据角色编号查询菜单信息 -->
+    <select id="getMenuList" parameterType="Integer" resultType="map">
+		select  b.*
+		from role_menu_info a,menu_info b
+		where a.menu_id = b.menu_id and a.role_id = #{roleId}
+	</select>
+
+    <!-- 添加 -->
+    <insert id="add" parameterType="RoleMenuInfo">
+		insert into role_menu_info
+		(menu_id,role_id)
+		values(#{menuId},#{roleId})
+
+	</insert>
+
+    <!-- 根据角色查询已经选择的菜单 -->
+    <select id="list" parameterType="RoleMenuInfo" resultMap="roleMenuMap">
+		select
+		* from role_menu_info where role_id=#{roleId}
+	</select>
+
+    <!-- 根据角色编号删除信息 -->
+    <delete id="delete"  parameterType="Integer" >
+		delete from role_menu_info where role_id=#{roleId}
+	</delete>
+
+</mapper>

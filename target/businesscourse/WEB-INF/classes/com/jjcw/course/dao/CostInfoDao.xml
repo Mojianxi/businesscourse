@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjcw.course.dao.ICostInfoDao">
+
+	<resultMap type="CostInfo" id="costmap">
+		<id property="costId" column="cost_id" />
+		<result property="costName" column="cost_name" />
+		<result property="costDesc" column="cost_desc" />
+		<result property="costFlag" column="cost_flag" />
+	</resultMap>
+
+	<!-- 添加费用 -->
+	<insert id="add" parameterType="CostInfo">
+		insert into cost_info
+		(cost_name,cost_desc,cost_flag)
+		values(#{costName},#{costDesc},#{costFlag})
+	</insert>
+	
+	<!-- 修改费用信息 -->
+	<update id="update" parameterType="CostInfo">
+		update cost_info 
+		<set>
+			<if test="costName!=null and costName!=''">
+				cost_name=#{costName},
+			</if>
+			<if test="costDesc!=null and costDesc!=''">
+				cost_desc=#{costDesc},
+			</if>
+			<if test="costFlag!=null and costFlag!=''">
+				cost_flag = #{costFlag},
+			</if>
+		</set>
+		where cost_id=#{costId}
+	
+	</update>
+
+	<!-- 分页查询 -->
+	<select id="list" parameterType="CostInfo" resultMap="costmap">
+		select * from cost_info where cost_flag=#{costFlag}
+		<if test="costName!=null and costName!=''">
+			and	 cost_name like #{costName}
+		</if>
+		order by cost_id desc
+
+		<if test="start!=-1">
+			limit #{start},#{length}
+		</if>
+
+	</select>
+
+	<!-- 查询总记录数 -->
+	<select id="getcount" parameterType="CostInfo" resultType="Long">
+		select count(1) from cost_info where cost_flag=#{costFlag}
+		<if test="costName!=null and costName!=''">
+			and	cost_name like #{costName}
+		</if>
+	</select>
+	
+	<!-- 根据编号查询费用信息 -->
+	<select id="getCostInfo" parameterType="CostInfo" resultMap="costmap">
+		select * from cost_info where cost_id=#{costId}
+	</select>
+</mapper>

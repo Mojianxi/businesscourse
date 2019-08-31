@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjcw.course.dao.IMenuInfoDao">
+
+	<resultMap type="MenuInfo" id="menumap">
+		<id property="menuId" column="menu_id" />
+		<result property="parentMenuId" column="parent_menu_id" />
+		<result property="menuName" column="menu_name" />
+		<result property="menuUrl" column="menu_url" />
+		<result property="parentName" column="parent_name" />
+	</resultMap>
+
+	<!-- 查询所有的菜单 -->
+	<select id="list" parameterType="MenuInfo" resultMap="menumap">
+		select *
+		from menu_info
+	</select>
+
+	<!-- 根据添加查询菜单信息 -->
+	<select id="getInfo" parameterType="MenuInfo" resultMap="menumap">
+		select
+		a.*,b.menu_name as parent_name from menu_info a,menu_info b
+		where
+		a.parent_menu_id = b.menu_id
+		and a.menu_id = #{menuId}
+	</select>
+
+	<!-- 添加菜单信息 -->
+	<insert id="add" parameterType="MenuInfo">
+		insert into menu_info
+		(menu_id,parent_menu_id,menu_name,menu_url)
+		values(#{menuId},#{parentMenuId},#{menuName},#{menuUrl})
+	</insert>
+
+	<!-- 修改菜单信息 -->
+	<update id="update" parameterType="MenuInfo">
+		update menu_info
+		<set>
+			<if test="parentMenuId!=null and parentMenuId!=''">
+				parent_menu_id=#{parentMenuId},
+			</if>
+			<if test="menuName!=null and menuName!=''">
+				menu_name = #{menuName},
+			</if>
+			<if test="menuUrl!=null and menuUrl!=''">
+				menu_url =#{menuUrl}
+			</if>
+		</set>
+		where menu_id = #{menuId}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="MenuInfo">
+		delete from menu_info where menu_id = #{menuId}
+	</delete>
+	
+	<!-- 根据父级菜单ID查询菜单信息 -->
+	<select id="getMenuList" parameterType="Integer" resultMap="menumap">
+		select * from  menu_info where  parent_menu_id=#{parentMenuId}
+	</select>
+
+</mapper>

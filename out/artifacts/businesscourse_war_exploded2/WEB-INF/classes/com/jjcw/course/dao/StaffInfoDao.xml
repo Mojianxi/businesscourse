@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjcw.course.dao.IStaffInfoDao">
+	<resultMap type="StaffInfo" id="staffmap">
+		<id property="staffId" column="staff_id" />
+		<result property="roleId" column="role_id" />
+		<result property="staffName" column="staff_name" />
+		<result property="staffSex" column="staff_sex" />
+		<result property="staffAge" column="staff_age" />
+		<result property="staffAccount" column="staff_account" />
+		<result property="staffPass" column="staff_password" />
+		<result property="staffPhone" column="staff_phone" />
+		<result property="staffWechat" column="staff_wechat" />
+		<result property="staffSalary" column="staff_salary" />
+		<result property="staffBirthday" column="staff_birthday" />
+		<result property="staffTag" column="staff_tag" />
+		<result property="roleName" column="role_name" />
+	</resultMap>
+	<!-- 用户登陆 -->
+	<select id="login" parameterType="StaffInfo" resultMap="staffmap">
+		select * from staff_info where staff_account=#{staffAccount} and staff_pass=#{staffPass}
+		and staff_tag='1'
+	</select>
+
+	<!-- 添加用户 -->
+	<insert id="add" parameterType="StaffInfo">
+		insert into staff_info
+		(role_id,staff_name,staff_sex,staff_age,staff_account,staff_pass,staff_phone,staff_wechat,staff_salary,staff_tag,role_name)
+		values(#{roleId},#{staffName},#{staffSex},#{staffAge},#{staffAccount},#{staffPass},#{staffPhone},#{staffWechat},#{staffSalary},#{staffTag},#{roleName})
+	</insert>
+
+	<!-- 修改用户信息 -->
+	<update id="update" parameterType="StaffInfo">
+		update staff_info
+		<set>
+			<if test="roleId!=null and roleId!=''">
+				role_id=#{roleId},
+			</if>
+			<if test="staffName!=null and staffName!=''">
+				staff_name=#{staffName},
+			</if>
+			<if test="staffSex!=null and staffSex!=''">
+				staff_sex=#{staffSex},
+			</if>
+			<if test="staffAge!=null and staffAge!=''">
+				staff_age=#{staffAge},
+			</if>
+			<if test="staffAccount!=null and staffAccount!=''">
+				staff_account=#{staffAccount},
+			</if>
+			<if test="staffPass!=null and staffPass!=''">
+				staff_pass=#{staffPass},
+			</if>
+			<if test="staffPhone!=null and staffPhone!=''">
+				staff_phone=#{staffPhone},
+			</if>
+			<if test="staffWechat!=null and staffWechat!=''">
+				staff_wechat=#{staffWechat},
+			</if>
+			<if test="staffSalary!=null and staffSalary!=''">
+				staff_salary=#{staffSalary},
+			</if>
+			<if test="staffBirthday!=null and staffBirthday!=''">
+				staff_birthday=#{staffBirthday},
+			</if>
+			<if test="staffTag!=null and staffTag!=''">
+				staff_tag=#{staffTag},
+			</if>
+			<if test="roleName!=null and roleName!=''">
+				role_name=#{roleName},
+			</if>
+		</set>
+           where staff_id=#{staffId}
+	</update>
+
+	<!-- 根据添加查询用户信息 -->
+	<select id="getStaff" parameterType="StaffInfo" resultMap="staffmap">
+		select a.*,b.role_name from staff_info a,role_info b where a.role_id =
+		b.role_id
+
+		<if test="staffId!=null and staffId!=''">
+			and a.staff_id = #{staffId}
+		</if>
+		<if test="staffAccount!=null and staffAccount!=''">
+			and a.staff_account = #{staffAccount}
+		</if>
+	</select>
+
+
+
+	<!-- 查询用户信息 -->
+	<select id="getStaffList" parameterType="StaffInfo" resultMap="staffmap">
+		select a.*,b.role_name from staff_info a,role_info b where
+		a.staff_tag=#{staffTag} and a.role_id=b.role_id
+		<if test="staffName!=null and staffName!=''">
+			and a.staff_name like #{staffName}
+		</if>
+		order by a.staff_id desc
+		<if test="start!=-1">
+			limit #{start},#{length}
+		</if>
+	</select>
+	<!-- 查询总记录数 -->
+	<select id="getcount" parameterType="StaffInfo" resultType="Long">
+		select count(1) from staff_info a,role_info b where
+		a.staff_tag=#{staffTag} and a.role_id=b.role_id
+		<if test="staffName!=null and staffName!=''">
+			and a.staff_name like #{staffName}
+		</if>
+		order by a.staff_id desc
+
+	</select>
+
+
+</mapper>

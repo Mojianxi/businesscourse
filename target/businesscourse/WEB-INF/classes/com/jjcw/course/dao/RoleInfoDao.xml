@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjcw.course.dao.IRoleInfoDao">
+
+    <resultMap type="RoleInfo" id="rolemap">
+        <id property="roleId" column="role_id" />
+        <result property="roleName" column="role_name" />
+        <result property="roleDesc" column="role_desc" />
+        <result property="roleFlag" column="role_flag" />
+    </resultMap>
+
+
+    <!-- 添加角色 -->
+    <insert id="add" parameterType="RoleInfo">
+		insert into role_info
+		(role_name,role_desc,role_flag)
+		values(#{roleName},#{roleDesc},#{roleFlag})
+	</insert>
+
+    <!-- 修改角色 -->
+    <update id="update" parameterType="RoleInfo">
+        update role_info
+        <set>
+            <if test="roleName!=null">
+                role_name=#{roleName},
+            </if>
+            <if test="roleDesc!=null">
+                role_desc=#{roleDesc},
+            </if>
+            <if test="roleFlag!=null">
+                role_flag=#{roleFlag},
+            </if>
+        </set>
+
+        where role_id = #{roleId}
+
+    </update>
+
+    <!-- 分页查询 -->
+    <select id="list" parameterType="RoleInfo"  resultMap="rolemap">
+        select * from role_info where role_flag=#{roleFlag}
+        <if test="roleName!=null and roleName!=''">
+            and role_name like #{roleName}
+        </if>
+        order by role_id desc
+        <if test="start!=-1">
+            limit #{start},#{length}
+        </if>
+    </select>
+    <!-- 总记录数 -->
+    <select id="getcount" parameterType="RoleInfo" resultType="Long">
+        select count(1) from role_info where role_flag=#{roleFlag}
+        <if test="roleName!=null and roleName!=''">
+            and role_name like #{roleName}
+        </if>
+    </select>
+
+    <!-- 根据编号查询角色信息 -->
+    <select id="getInfo" parameterType="RoleInfo" resultMap="rolemap">
+		select *
+		from role_info where role_id=#{roleId}
+	</select>
+
+</mapper>

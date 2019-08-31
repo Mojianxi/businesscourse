@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjcw.course.dao.ICustomerCourseStaffDao">
+    <resultMap type="CustomerStaffCourse" id="CustomerStaffCourseMap">
+        <id property="cscId" column="csc_id" />
+        <result property="customerId" column="customer_id" />
+        <result property="customerName" column="customer_name" />
+        <result property="courseId" column="course_id" />
+        <result property="courseName" column="course_name" />
+        <result property="coursePrice" column="course_price" />
+        <result property="staffId" column="staff_id" />
+        <result property="staffName" column="staff_name" />
+        <result property="relevType" column="relev_type" />
+        <result property="relevState" column="relev_state" />
+        <result property="payMoney" column="pay_money" />
+        <result property="payTime" column="pay_time" />
+    </resultMap>
+	<!-- 查询订单关联信息 -->
+	<select id="list" parameterType="CustomerInfo" resultMap="CustomerStaffCourseMap">
+		select a.relev_type,a.pay_money,a.pay_time,b.course_name,b.course_price,c.staff_name from
+customer_staff_course as a,course_info as b,staff_info as c WHERE a.customer_id=#{customerId} and
+a.course_id=b.course_id and a.staff_id=c.staff_id
+	</select>
+</mapper>

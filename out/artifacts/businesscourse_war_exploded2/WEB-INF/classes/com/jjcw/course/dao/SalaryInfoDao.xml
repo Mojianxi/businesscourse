@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjcw.course.dao.ISalaryInfoDao">
+
+	<resultMap type="SalaryInfo" id="salarymap">
+		<id property="salaryId" column="salary_id" />
+		<result property="staffId" column="staff_id" />
+		<result property="staffName" column="staff_name" />
+		<result property="salaryDate" column="salary_date" />
+		<result property="salaryBasic" column="salary_basic" />
+		<result property="meritPay" column="merit_pay" />
+		<result property="royaltyPay" column="royalty_pay" />
+	</resultMap>
+	<!-- 分页查询 -->
+	<select id="list" parameterType="SalaryInfo" resultMap="salarymap">
+		select a.*,b.staff_name from salary_info a,staff_info b
+		where a.staff_id = b.staff_id
+		<if test="staffName!=null and staffName!=''">
+			and b.staff_name like #{staffName}
+		</if>
+		<if test="salaryDate!=null">
+			and a.salary_date = #{salaryDate}
+		</if>
+
+		order by salary_id desc
+
+		<if test="start!=-1">
+			limit #{start},#{length}
+		</if>
+
+	</select>
+
+	<!-- 返回总记录数 -->
+	<select id="getcount" parameterType="SalaryInfo" resultType="Long">
+		select count(1) from salary_info a,staff_info b
+		where a.staff_id = b.staff_id
+		<if test="staffName!=null and staffName!=''">
+			and b.staff_name like #{staffName}
+		</if>
+		<if test="salaryDate!=null">
+			and a.salary_date = #{salaryDate}
+		</if>
+
+	</select>
+
+	<!-- 添加薪资发放记录 -->
+	<insert id="add" parameterType="SalaryInfo">
+		insert into salary_info
+		(staff_id,salary_date,salary_basic,merit_pay,royalty_pay)
+		values(#{staffId},#{salaryDate},#{salaryBasic},#{meritPay},#{royaltyPay})
+	</insert>
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjcw.course.dao.ICustomerDao">
+    <resultMap type="CustomerInfo" id="customerMap">
+        <id property="customerId" column="customer_id" />
+        <result property="customerName" column="customer_name" />
+        <result property="customerSex" column="customer_sex" />
+        <result property="customerDuty" column="customer_duty" />
+        <result property="customerCompany" column="customer_company" />
+        <result property="customerLocation" column="customer_location" />
+        <result property="customerPhone" column="customer_phone" />
+        <result property="customerWechat" column="customer_wechat" />
+        <result property="payCourseNum" column="pay_course_num" />
+        <result property="purposeCourseNum" column="purpose_course_num" />
+        <result property="payMoney" column="pay_money" />
+    </resultMap>
+	<parameterMap type="com.jjcw.course.bean.ClassidInfo" id="ClassidMap">
+		<parameter property="classId" />
+	</parameterMap>
+	<!-- 查询客户信息 -->
+	<select id="list" parameterType="CustomerInfo" resultMap="customerMap">
+		select a.*,sum(b.pay_money) as pay_money,sum(case when b.relev_type=2 then 1 else 0 end) as pay_course_num,
+		sum(case when b.relev_type=1 then 1 else 0 end) as purpose_course_num from customer_info a,customer_staff_course b where
+		a.customer_id=b.customer_id
+		<if test="customerName!=null and customerName!=''">
+			and a.customer_name like #{customerName}
+		</if>
+		GROUP BY a.customer_id order by a.customer_id desc
+		<if test="start!=-1">
+			limit #{start},#{length}
+		</if>
+	</select>
+	<!-- 查询总记录数 -->
+	<select id="getcount" parameterType="CustomerInfo" resultType="Long">
+		select count(1) from (SELECT COUNT(DISTINCT customer_name) FROM customer_info as a,customer_staff_course as b WHERE a.customer_id=b.customer_id
+GROUP BY a.customer_id) as a
+
+	</select>
+
+	<!-- 根据已有客户查询客户信息 -->
+	<select id="getCustomer" parameterType="CustomerInfo" resultMap="customerMap">
+		select *,0 as payCourseNum ,0 as purpose_course_num,0 as pay_money from customer_info
+		<if test="customerId!=null and customerId!=''">
+			where customer_id=#{customerId}
+		</if>
+
+	</select>
+
+	<!-- 查询客户信息 -->
+	<select id="listCustomer" parameterType="ClassidInfo" resultMap="customerMap">
+		SELECT a.*,SUM(c.pay_money) as pay_money,0 as pay_course_num,0 as purpose_course_num
+		 FROM customer_info as a,class_course_info as b,
+		customer_staff_course as c WHERE b.class_id=#{classId}
+		and b.customer_id=a.customer_id and b.customer_id=c.customer_id GROUP BY a.customer_id
+
+	</select>
+	<!-- 查询班级学生总记录数 -->
+	<select id="getClasscount" parameterType="ClassidInfo" resultType="Long">
+		select COUNT(DISTINCT a.customer_id) FROM customer_info as a,class_course_info as b WHERE b.class_id=#{classId} AND
+b.customer_id=a.customer_id
+	</select>
+	<!-- 查询对应员工客户信息 -->
+	<select id="listStaffCustomer" parameterType="INTEGER" resultMap="customerMap">
+		SELECT a.*,SUM(b.pay_money) as pay_money,0 as pay_course_num,0 as purpose_course_num
+,0 as pay_time FROM customer_staff_course b,
+customer_info a WHERE
+b.staff_id=#{staffId} and b.customer_id=a.customer_id GROUP BY b.customer_id
+
+	</select>
+</mapper>
