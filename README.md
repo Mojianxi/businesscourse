@@ -1,6 +1,6 @@
 ## 课程管理系统设计
 
-###### [项目演示](http://47.111.146.179/jjsxy/login.jsp)   
+###### [项目演示](http://www.mojianxi.com:9000/businesscourse)   
 
 - 管理员:dd
 - 密码:111111
